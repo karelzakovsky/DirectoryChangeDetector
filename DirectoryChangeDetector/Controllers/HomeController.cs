@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using DirectoryChangeDetector.Models;
 using System.Text.Json;
 
@@ -16,24 +16,26 @@ namespace DirectoryChangeDetector.Controllers
 		[HttpPost]
 		public IActionResult Analyze(string directoryPath)
 		{
-			DataFileName = Path.GetFileName(directoryPath) + ".json";
-
+			//☺ Neplatná cesta k adresáři
 			if (string.IsNullOrWhiteSpace(directoryPath) || !Directory.Exists(directoryPath))
 			{
-				ViewBag.Error = "Zadan� adres�� neexistuje.";
+				ViewBag.Error = "Zadaný adresář neexistuje.";
 				return View("Index");
 			}
 
-			var currentData = AnalyzeDirectory(directoryPath);
-			var storedData = LoadStoredData();
-			var changes = CompareData(storedData, currentData);
+			DataFileName = Path.GetFileName(directoryPath) + ".json";  //☺ Nastavení názvu souboru pro uložení dat
 
-			SaveData(currentData);
+			var currentData = AnalyzeDirectory(directoryPath);  //☺ Analýza souborů v zadaném adresáři
+			var storedData = LoadStoredData();  //☺ Načteme uložená data
+			var changes = CompareData(storedData, currentData);  //☺ Porovnáme aktuální a uložená data
 
-			ViewBag.Changes = changes;
+			SaveData(currentData);  //☺ Uložíme aktuální data
+
+			ViewBag.Changes = changes;  //☺ Zobrazíme změny na stránce
 			return View("Index");
 		}
 
+		//☺ Funkce pro analýzu souborů v adresáři
 		private Dictionary<string, FileData> AnalyzeDirectory(string path)
 		{
 			var files = Directory.GetFiles(path, "*", SearchOption.AllDirectories);
@@ -49,6 +51,7 @@ namespace DirectoryChangeDetector.Controllers
 			return fileData;
 		}
 
+		//☺ Funkce pro načtení uložených dat
 		private Dictionary<string, FileData> LoadStoredData()
 		{
 			if (!System.IO.File.Exists(DataFileName))
@@ -60,12 +63,14 @@ namespace DirectoryChangeDetector.Controllers
 			return JsonSerializer.Deserialize<Dictionary<string, FileData>>(json);
 		}
 
+		//☺ Funkce pro uložení dat do souboru
 		private void SaveData(Dictionary<string, FileData> data)
 		{
 			string json = JsonSerializer.Serialize(data);
 			System.IO.File.WriteAllText(DataFileName, json);
 		}
 
+		//☺ Funkce pro porovnání starých a nových dat a detekci změn
 		private Changes CompareData(Dictionary<string, FileData> oldData, Dictionary<string, FileData> newData)
 		{
 			var changes = new Changes();
@@ -74,18 +79,18 @@ namespace DirectoryChangeDetector.Controllers
 			{
 				if (!oldData.ContainsKey(file.Key))
 				{
-					changes.Added.Add($"{file.Key}_v{file.Value.Version}");
+					changes.Added.Add($"{file.Key}_v{file.Value.Version}");  //☺ Nový soubor
 				}
 				else if (oldData[file.Key].LastModified != file.Value.LastModified)
 				{
-					file.Value.Version = oldData[file.Key].Version + 1;
-					changes.Modified.Add($"{file.Key}_v{file.Value.Version}");
+					file.Value.Version = oldData[file.Key].Version + 1;  //☺ Zvýšení verze souboru
+					changes.Modified.Add($"{file.Key}_v{file.Value.Version}");  //☺ Změněný soubor
 				}
 			}
 
 			foreach (var file in oldData.Keys.Except(newData.Keys))
 			{
-				changes.Deleted.Add($"{file}_v{oldData[file].Version}");
+				changes.Deleted.Add($"{file}_v{oldData[file].Version}");  //☺ Smazaný soubor
 			}
 
 			return changes;
