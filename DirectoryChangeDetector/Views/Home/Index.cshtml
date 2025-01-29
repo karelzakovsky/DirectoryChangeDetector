@@ -1,0 +1,76 @@
+﻿@{
+	ViewBag.Title = "Directory Change Detector";
+}
+
+<h1>Detekce změn v adresáři</h1>
+
+@if (ViewBag.Error != null)
+{
+	<p style="color: #C17C74;">@ViewBag.Error</p>
+}
+
+<form method="post" asp-action="Analyze" style="margin-bottom: 20px;">
+	<label for="directoryPath">Cesta k adresáři:</label><br />
+	<input type="text" id="directoryPath" name="directoryPath" style="width: 400px; height: 25px;" />
+	<button type="submit" style="margin-left: 10px;">Analyzovat</button>
+</form>
+
+@if (ViewBag.Changes != null)
+{
+	var changes = (DirectoryChangeDetector.Models.Changes)ViewBag.Changes;
+
+	if (!changes.Added.Any() && !changes.Modified.Any() && !changes.Deleted.Any())
+	{
+		<h2>Neproběhla žádná změna</h2>
+	}
+	else
+	{
+		<h2>Výsledky:</h2>
+		<div class="answers">
+			@if (changes.Added.Any())
+			{
+				<div class="answerList">
+					<h4>Nově přidané soubory</h4>
+					<div class="list" id="addedAnswers">
+						<ul>
+							@foreach (var file in changes.Added)
+							{
+								<li>@file</li>
+							}
+						</ul>
+					</div>
+				</div>
+			}
+
+			@if (changes.Modified.Any())
+			{
+				<div class="answerList">
+					<h4>Změněné soubory</h4>
+					<div class="list" id="modifiedAnswers">
+						<ul>
+							@foreach (var file in changes.Modified)
+							{
+								<li>@file</li>
+							}
+						</ul>
+					</div>
+				</div>
+			}
+
+			@if (changes.Deleted.Any())
+			{
+				<div class="answerList">
+					<h4>Smazané soubory</h4>
+					<div class="list" id="deletedAnswers">
+						<ul>
+							@foreach (var file in changes.Deleted)
+							{
+								<li>@file</li>
+							}
+						</ul>
+					</div>
+				</div>
+			}
+		</div>
+	}
+}
