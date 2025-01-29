@@ -1,4 +1,4 @@
-Řešení detekkuje změny v adresáři souborů, kde uživatel zadá cestu k adresáři a aplikace porovná aktuální stav souborů s uloženým stavem z předchozí analýzy. 
+Řešení detekuje změny v adresáři souborů, kde uživatel zadá cestu k adresáři a aplikace porovná aktuální stav souborů s uloženým stavem z předchozí analýzy. 
 Pokud došlo k nějakým změnám (přidání, změna nebo smazání souborů), zobrazí se výstup s těmito změnami.
 
 Controller HomeController zpracovává požadavky, porovnává aktuální a uložený stav adresáře a detekuje změny.
